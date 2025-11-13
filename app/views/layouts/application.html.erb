@@ -20,10 +20,35 @@
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <!-- Basecoat CDN for simple tasteful styles (fallback if you haven't installed basecoat-assets) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.3/dist/basecoat.cdn.min.css">
     <%= javascript_importmap_tags %>
   </head>
 
   <body>
-    <%= yield %>
+    <header class="py-4 border-b">
+      <div class="container mx-auto px-4 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <h1 class="text-lg font-medium">Spotify Tidal</h1>
+          <nav class="text-sm">
+            <%= link_to "Home", root_path, class: "link" %>
+          </nav>
+        </div>
+        <div>
+          <% if authenticated? %>
+            <span class="text-sm">Logged in as <strong><%= current_user.email_address %></strong></span>
+            <%= button_to "Logout", session_path, method: :delete, class: "btn btn-ghost btn-sm ml-3" %>
+          <% else %>
+            <%= link_to "Login", new_session_path, class: "link mr-3" %>
+            <%= link_to "Sign Up", new_registration_path, class: "link" %>
+          <% end %>
+        </div>
+      </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+      <%= render 'shared/flash' %>
+      <%= yield %>
+    </main>
   </body>
 </html>

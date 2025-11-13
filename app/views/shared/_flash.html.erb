@@ -1,0 +1,12 @@
+<% if flash.any? %>
+  <div class="toaster">
+    <% flash.each do |type, message| %>
+      <% cls = type.to_s == 'notice' ? 'toast toast-success' : 'toast toast-destructive' %>
+      <div class="<%= cls %>" role="status">
+        <div class="toast-content">
+          <p><%= message %></p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>

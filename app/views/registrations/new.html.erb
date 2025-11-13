@@ -1,0 +1,32 @@
+<div class="card mx-auto max-w-md">
+  <div class="card-body">
+    <h2 class="text-lg font-medium mb-4">Create an account</h2>
+
+    <%= form_with model: @user, url: registration_path, local: true do |form| %>
+      <div class="grid gap-3">
+        <div>
+          <%= form.label :email_address, class: "label" %>
+          <%= form.email_field :email_address, required: true, autofocus: true, class: "input w-full" %>
+        </div>
+
+        <div>
+          <%= form.label :password, class: "label" %>
+          <%= form.password_field :password, required: true, class: "input w-full" %>
+        </div>
+
+        <div>
+          <%= form.label :password_confirmation, class: "label" %>
+          <%= form.password_field :password_confirmation, required: true, class: "input w-full" %>
+        </div>
+
+        <div>
+          <%= form.submit "Sign Up", class: "btn btn-primary" %>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="mt-4">
+      <%= link_to "Login", new_session_path, class: "link" %>
+    </div>
+  </div>
+</div>
