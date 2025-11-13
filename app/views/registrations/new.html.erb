@@ -1,32 +1,42 @@
-<div class="card mx-auto max-w-md">
-  <div class="card-body">
-    <h2 class="text-lg font-medium mb-4">Create an account</h2>
+<div class="max-w-md mx-auto">
+  <div class="text-center mb-6">
+    <h1 class="text-2xl font-bold mb-2">Join Spotify Tidal</h1>
+    <p class="text-muted">Create your account to get started</p>
+  </div>
 
-    <%= form_with model: @user, url: registration_path, local: true do |form| %>
-      <div class="grid gap-3">
-        <div>
-          <%= form.label :email_address, class: "label" %>
-          <%= form.email_field :email_address, required: true, autofocus: true, class: "input w-full" %>
-        </div>
+  <div class="card">
+    <div class="card-body">
+      <h2 class="text-lg font-medium mb-4">Create an account</h2>
 
-        <div>
-          <%= form.label :password, class: "label" %>
-          <%= form.password_field :password, required: true, class: "input w-full" %>
-        </div>
+      <%= form_with model: @user, url: registration_path, local: true do |form| %>
+        <div class="space-y-4">
+          <div>
+            <%= form.label :email_address, class: "label" %>
+            <%= form.email_field :email_address, required: true, autofocus: true, class: "input w-full", placeholder: "your@email.com" %>
+          </div>
 
-        <div>
-          <%= form.label :password_confirmation, class: "label" %>
-          <%= form.password_field :password_confirmation, required: true, class: "input w-full" %>
-        </div>
+          <div>
+            <%= form.label :password, class: "label" %>
+            <%= form.password_field :password, required: true, class: "input w-full", placeholder: "Choose a strong password" %>
+          </div>
 
-        <div>
-          <%= form.submit "Sign Up", class: "btn btn-primary" %>
+          <div>
+            <%= form.label :password_confirmation, class: "label" %>
+            <%= form.password_field :password_confirmation, required: true, class: "input w-full", placeholder: "Confirm your password" %>
+          </div>
+
+          <div class="pt-2">
+            <%= form.submit "Sign Up", class: "btn btn-primary w-full" %>
+          </div>
         </div>
+      <% end %>
+
+      <div class="mt-6 text-center">
+        <p class="text-sm text-muted">
+          Already have an account?
+          <%= link_to "Login here", new_session_path, class: "text-accent hover:text-color-3 font-medium" %>
+        </p>
       </div>
-    <% end %>
-
-    <div class="mt-4">
-      <%= link_to "Login", new_session_path, class: "link" %>
     </div>
   </div>
 </div>

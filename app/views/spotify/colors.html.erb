@@ -1,0 +1,36 @@
+<div class="text-center mb-8">
+  <h1>Color Palette Editor</h1>
+  <p class="text-muted mt-2">Customize your color scheme and see changes in real-time</p>
+</div>
+
+<%= render 'shared/color_palette' %>
+
+<div class="card mx-auto max-w-4xl">
+  <div class="card-body">
+    <h2 class="text-xl font-semibold mb-4">Edit Color Variables</h2>
+    <p class="text-sm text-muted mb-6">Change the CSS custom properties below. Your changes are saved automatically in your browser.</p>
+
+    <%= render 'shared/color_editor' %>
+
+    <div class="mt-6 pt-6 border-t border-gray-200">
+      <h3 class="text-lg font-medium mb-3">Color Usage Guide</h3>
+      <div class="grid md:grid-cols-2 gap-4 text-sm">
+        <div>
+          <h4 class="font-semibold text-color-10 mb-2">Primary Colors</h4>
+          <ul class="space-y-1 text-muted">
+            <li><code>--color-8</code> to <code>--color-10</code>: Used for buttons and primary elements</li>
+            <li><code>--color-1</code> to <code>--color-5</code>: Used for accents and highlights</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold text-color-10 mb-2">Semantic Colors</h4>
+          <ul class="space-y-1 text-muted">
+            <li><code>--primary</code>: Maps to <code>--color-8</code></li>
+            <li><code>--accent</code>: Maps to <code>--color-2</code></li>
+            <li><code>--bg</code> & <code>--text</code>: Background and text colors</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

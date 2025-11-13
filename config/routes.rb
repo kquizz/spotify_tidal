@@ -15,4 +15,5 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root to: "spotify#index"
   get "spotify", to: "spotify#index"
+  get "colors", to: "spotify#colors"
 end

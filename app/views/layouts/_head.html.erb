@@ -16,9 +16,9 @@
   <link rel="icon" href="/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/icon.png">
 
-  <%# Includes all stylesheet files in app/assets/stylesheets %>
-  <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
   <!-- Basecoat CDN for simple tasteful styles (fallback if you haven't installed basecoat-assets) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.3/dist/basecoat.cdn.min.css">
+  <%# Includes all stylesheet files in app/assets/stylesheets - loaded after CDN so our overrides apply %>
+  <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
   <%= javascript_importmap_tags %>
 </head>

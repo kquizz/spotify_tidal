@@ -1,0 +1,17 @@
+<div data-controller="color-editor" class="card mt-6">
+  <div class="card-body">
+    <h3 class="text-lg font-medium">Edit color palette</h3>
+    <p class="text-sm">Change values and they'll update immediately (stored in your browser).</p>
+    <div class="grid lg:grid-cols-5 gap-4 mt-4">
+      <% (1..10).each do |i| %>
+        <div>
+          <label class="label">--color-<%= i %></label>
+          <input data-color-editor-target="input" data-css-var="--color-<%= i %>" type="color" value="<%= get_color_default(i) %>" class="input" data-action="input->color-editor#set">
+        </div>
+      <% end %>
+    </div>
+    <div class="mt-4">
+      <button type="button" class="btn" data-action="click->color-editor#reset">Reset to defaults</button>
+    </div>
+  </div>
+</div>

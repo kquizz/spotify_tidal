@@ -6,4 +6,7 @@ class SpotifyController < ApplicationController
       @searched_user_id = params[:user_id]
     end
   end
+
+  def colors
+  end
 end
