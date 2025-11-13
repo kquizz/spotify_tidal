@@ -8,6 +8,45 @@ class SpotifyService
     @refresh_token = refresh_token
   end
 
+  def liked_tracks(limit: 50)
+    token = fetch_access_token
+    return [] unless token
+
+    resp = Faraday.get "#{SPOTIFY_API_BASE}/me/tracks", { limit: limit }, { "Authorization" => "Bearer #{token}" }
+    return [] unless resp.success?
+
+    json = JSON.parse(resp.body)
+    json["items"].map do |item|
+      track = item["track"]
+      {
+        id: track["id"],
+        name: track["name"],
+        artists: track.dig("artists", 0, "name"),
+        album: track.dig("album", "name"),
+        href: track["external_urls"] && track["external_urls"]["spotify"]
+      }
+    end
+  end
+
+  def user_playlists(user_id, limit: 50)
+    token = fetch_access_token
+    return [] unless token
+
+    resp = Faraday.get "#{SPOTIFY_API_BASE}/users/#{user_id}/playlists", { limit: limit }, { "Authorization" => "Bearer #{token}" }
+    return [] unless resp.success?
+
+    json = JSON.parse(resp.body)
+    json["items"].select { |p| p["public"] }.map do |p|  # Only public playlists
+      {
+        id: p["id"],
+        name: p["name"],
+        owner: p.dig("owner", "display_name"),
+        tracks_total: p.dig("tracks", "total"),
+        href: p["external_urls"] && p["external_urls"]["spotify"]
+      }
+    end
+  end
+
   def playlists(limit: 50)
     token = fetch_access_token
     return [] unless token

@@ -1,15 +1,25 @@
-<h1>Spotify Playlists</h1>
+<h1>Spotify Playlist Viewer</h1>
 
-<% if @playlists.blank? %>
-  <p>No playlists found. Make sure your SPOTIFY_* env vars are set and valid.</p>
-<% else %>
-  <ul>
-    <% @playlists.each do |pl| %>
-      <li>
-        <strong><%= pl[:name] %></strong>
-        (<%= pl[:tracks_total] %> tracks) — owner: <%= pl[:owner] || "unknown" %>
-        <% if pl[:href] %> — <a href="<%= pl[:href] %>" target="_blank">Open in Spotify</a><% end %>
-      </li>
-    <% end %>
-  </ul>
+<h2>Search for User's Public Playlists</h2>
+<%= form_with method: :get do |form| %>
+  <%= form.label :user_id, "Enter Spotify User ID:" %>
+  <%= form.text_field :user_id %>
+  <%= form.submit "Search" %>
+<% end %>
+
+<% if @searched_user_id %>
+  <h3>Public Playlists for User <%= @searched_user_id %></h3>
+  <% if @searched_playlists.any? %>
+    <ul>
+      <% @searched_playlists.each do |pl| %>
+        <li>
+          <strong><%= pl[:name] %></strong>
+          (<%= pl[:tracks_total] %> tracks) — owner: <%= pl[:owner] || "unknown" %>
+          <% if pl[:href] %> — <a href="<%= pl[:href] %>" target="_blank">Open in Spotify</a><% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>No public playlists found for this user.</p>
+  <% end %>
 <% end %>
