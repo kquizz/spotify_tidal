@@ -1,0 +1,15 @@
+<h1>Spotify Playlists</h1>
+
+<% if @playlists.blank? %>
+  <p>No playlists found. Make sure your SPOTIFY_* env vars are set and valid.</p>
+<% else %>
+  <ul>
+    <% @playlists.each do |pl| %>
+      <li>
+        <strong><%= pl[:name] %></strong>
+        (<%= pl[:tracks_total] %> tracks) — owner: <%= pl[:owner] || "unknown" %>
+        <% if pl[:href] %> — <a href="<%= pl[:href] %>" target="_blank">Open in Spotify</a><% end %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
