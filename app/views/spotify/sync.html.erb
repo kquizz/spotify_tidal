@@ -1,0 +1,25 @@
+<h1>Sync Playlists</h1>
+
+<table class="border-collapse border border-gray-300">
+  <thead>
+    <tr class="bg-gray-100">
+      <th class="border border-gray-300 px-4 py-2">Playlist</th>
+      <th class="border border-gray-300 px-4 py-2">Song</th>
+      <th class="border border-gray-300 px-4 py-2">Artist</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @playlists.each do |playlist| %>
+      <% playlist.songs.each do |song| %>
+        <tr>
+          <td class="border border-gray-300 px-4 py-2"><%= playlist.name %></td>
+          <td class="border border-gray-300 px-4 py-2"><%= song.name %></td>
+          <td class="border border-gray-300 px-4 py-2"><%= song.artist.name %></td>
+        </tr>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>
+
+<!-- Future sync button -->
+<!-- <button>Sync to Tidal</button> -->

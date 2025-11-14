@@ -21,4 +21,8 @@ class SpotifyController < ApplicationController
 
   def colors
   end
+
+  def sync
+    @playlists = Playlist.includes(:songs).all
+  end
 end
