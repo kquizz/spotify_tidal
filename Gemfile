@@ -73,3 +73,7 @@ group :test do
 end
 
 gem "basecoat", "~> 2.2"
+
+gem "shadcn-ui"
+
+gem "tailwindcss-rails"

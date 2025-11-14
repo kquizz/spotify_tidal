@@ -1,0 +1,24 @@
+<div class="flex items-center gap-3 p-3 hover:bg-gray-50">
+  <% album_image = song.respond_to?(:album) ? song.album.image_url : song[:album_image] %>
+  <% album_name = song.respond_to?(:album) ? song.album.name : song[:album] %>
+  <% song_name = song.respond_to?(:name) ? song.name : song[:name] %>
+  <% artist_name = song.respond_to?(:artist) ? song.artist.name : song[:artists] %>
+  <% if album_image %>
+    <img src="<%= album_image %>" alt="<%= album_name %>" width="16" height="16" class="rounded object-cover flex-shrink-0">
+  <% else %>
+    <div class="w-4 h-4 bg-gray-200 rounded flex items-center justify-center flex-shrink-0">
+      <span class="text-xs text-gray-500">No Art</span>
+    </div>
+  <% end %>
+  <div class="flex-1 min-w-0 text-sm">
+    <div class="truncate">
+      <span class="font-medium text-gray-900"><%= song_name %></span>
+      <span class="text-gray-600"> — <%= artist_name %> • <%= album_name %></span>
+    </div>
+  </div>
+  <div class="text-sm text-gray-500 flex-shrink-0">
+    <% spotify_id = song.respond_to?(:spotify_id) ? song.spotify_id : song[:id] %>
+    <% href = song.respond_to?(:href) ? song[:href] : song[:href] || "https://open.spotify.com/track/#{spotify_id}" %>
+    <%= link_to "Spotify", href, target: "_blank", class: "text-blue-500 hover:text-blue-700" %>
+  </div>
+</div>

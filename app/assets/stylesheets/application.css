@@ -11,5 +11,6 @@
 
 @import "_colors.css";
 @import "_basecoat_overrides.css";
+@import "shadcn.css";
 
 /* Keep additional application styles below */

@@ -37,7 +37,10 @@
           <% end %>
         </div>
         <nav class="flex items-center gap-3 text-sm">
-          <%= link_to "Home", root_path, class: "link" %> | 
+          <%= link_to "Home", root_path, class: "link" %> |
+          <%= link_to "Playlists", playlists_path, class: "link" %> |
+          <%= link_to "Albums", albums_path, class: "link" %> |
+          <%= link_to "Artists", artists_path, class: "link" %> |
           <%= link_to "Customize Colors", colors_path, class: "link" %> |
           <%= link_to "Logout", session_path, method: :delete, class: "link ml-auto" %>
         </nav>

@@ -1,0 +1,21 @@
+<div class="card">
+  <div class="card-body">
+    <div class="flex items-start gap-4">
+      <% if playlist.image_url %>
+        <img src="<%= playlist.image_url %>" alt="<%= playlist.name %>" class="w-16 h-16 rounded object-cover flex-shrink-0">
+      <% else %>
+        <div class="w-16 h-16 bg-gray-200 rounded flex items-center justify-center flex-shrink-0">
+          <span class="text-gray-500 text-sm">No Image</span>
+        </div>
+      <% end %>
+      <div class="flex-1">
+        <h3 class="text-lg font-semibold"><%= playlist.name %></h3>
+        <div class="text-sm text-muted mt-1">
+          <%= playlist.tracks_total %> tracks • Owner: <%= playlist.owner %>
+        </div>
+        <%= link_to "View Tracks", playlist_path(playlist), class: "btn btn-sm btn-primary mt-2" %>
+        <%= button_to "Unsave", playlist_path(playlist), method: :delete, class: "btn btn-sm btn-danger mt-2 ml-2", data: { confirm: "Are you sure?" } %>
+      </div>
+    </div>
+  </div>
+</div>

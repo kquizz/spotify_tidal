@@ -1,0 +1,17 @@
+<div class="flex items-start gap-4 p-4 border-b hover:bg-gray-50">
+  <% if album.image_url %>
+    <img src="<%= album.image_url %>" alt="<%= album.name %>" width="32" height="32" class="rounded object-cover flex-shrink-0">
+  <% else %>
+    <div class="w-8 h-8 bg-gray-200 rounded flex items-center justify-center flex-shrink-0">
+      <span class="text-gray-500 text-xs">No Image</span>
+    </div>
+  <% end %>
+  <div class="flex-1">
+    <h3 class="text-lg font-semibold"><%= album.name %></h3>
+    <p class="text-sm text-muted"><%= album.artist.name %></p>
+    <div class="flex flex-nowrap gap-2 mt-2">
+      <%= link_to "View Tracks", album_path(album), class: "btn btn-sm btn-primary" %>
+      <%= button_to "Unsave", album_path(album), method: :delete, class: "btn btn-sm btn-danger", data: { confirm: "Are you sure?" } %>
+    </div>
+  </div>
+</div>

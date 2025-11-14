@@ -1,0 +1,15 @@
+<div class="card">
+  <div class="card-body">
+    <% if album.image_url %>
+      <img src="<%= album.image_url %>" alt="<%= album.name %>" class="w-full h-48 object-cover rounded mb-4">
+    <% else %>
+      <div class="w-full h-48 bg-gray-200 rounded flex items-center justify-center mb-4">
+        <span class="text-gray-500">No Image</span>
+      </div>
+    <% end %>
+    <h3 class="text-lg font-semibold"><%= album.name %></h3>
+    <p class="text-sm text-muted"><%= album.artist.name %></p>
+    <%= link_to "View Tracks", album_path(album), class: "btn btn-sm btn-primary mt-2" %>
+    <%= button_to "Unsave", album_path(album), method: :delete, class: "btn btn-sm btn-danger mt-2 ml-2", data: { confirm: "Are you sure?" } %>
+  </div>
+</div>

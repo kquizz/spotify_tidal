@@ -42,9 +42,34 @@ class SpotifyService
         name: p["name"],
         owner: p.dig("owner", "display_name"),
         tracks_total: p.dig("tracks", "total"),
-        href: p["external_urls"] && p["external_urls"]["spotify"]
+        href: p["external_urls"] && p["external_urls"]["spotify"],
+        image: p["images"] && p["images"][1] && p["images"][1]["url"]
       }
     end
+  end
+
+  def playlist_tracks(playlist_id, limit: 50)
+    token = fetch_access_token
+    return [] unless token
+
+    resp = Faraday.get "#{SPOTIFY_API_BASE}/playlists/#{playlist_id}/tracks", { limit: limit }, { "Authorization" => "Bearer #{token}" }
+    return [] unless resp.success?
+
+    json = JSON.parse(resp.body)
+    json["items"].map do |item|
+      track = item["track"]
+      next unless track
+      {
+        id: track["id"],
+        name: track["name"],
+        artists: track.dig("artists", 0, "name"),
+        artist_id: track.dig("artists", 0, "id"),
+        album: track.dig("album", "name"),
+        album_id: track.dig("album", "id"),
+        album_image: track.dig("album", "images", 1, "url"),
+        href: track["external_urls"] && track["external_urls"]["spotify"]
+      }
+    end.compact
   end
 
   def playlists(limit: 50)

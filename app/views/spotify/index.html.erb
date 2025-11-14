@@ -23,19 +23,38 @@
     <div class="card-body">
       <h3 class="text-xl font-semibold mb-4">Public Playlists for User: <span class="text-accent"><%= @searched_user_id %></span></h3>
       <% if @searched_playlists.any? %>
-        <div class="space-y-3">
+        <div class="space-y-4">
           <% @searched_playlists.each do |pl| %>
-            <div class="playlist-item">
-              <div class="flex justify-between items-start">
-                <div>
-                  <strong class="text-lg"><%= pl[:name] %></strong>
-                  <div class="text-sm text-muted mt-1">
+            <div class="playlist-item" data-controller="playlist">
+              <div class="playlist-header">
+                <div class="playlist-art">
+                  <% if pl[:image] %>
+                    <img src="<%= pl[:image] %>" alt="<%= pl[:name] %>" class="playlist-art-image">
+                  <% else %>
+                    <div class="playlist-art-placeholder">No Image</div>
+                  <% end %>
+                </div>
+                <div class="playlist-summary">
+                  <div class="playlist-title">
+                    <a href="<%= spotify_playlist_path(pl[:id]) %>" data-action="playlist#toggle" data-playlist-target="link" class="playlist-name"><%= pl[:name] %></a>
+                    <% if @saved_playlist_ids.include?(pl[:id]) %>
+                      <span class="playlist-badge">Saved</span>
+                    <% end %>
+                  </div>
+                  <div class="playlist-meta text-sm">
                     <%= pl[:tracks_total] %> tracks • Owner: <%= pl[:owner] || "unknown" %>
                   </div>
+                  <div class="playlist-links">
+                    <% if pl[:href] %>
+                      <a href="<%= pl[:href] %>" target="_blank" class="playlist-link">Open in Spotify</a>
+                    <% end %>
+                    <% unless @saved_playlist_ids.include?(pl[:id]) %>
+                      <%= button_to "Save Playlist", playlists_path(playlist: { name: pl[:name], spotify_id: pl[:id], owner: pl[:owner], image_url: pl[:image], tracks_total: pl[:tracks_total] }), method: :post, class: "btn btn-xs btn-secondary" %>
+                    <% end %>
+                  </div>
                 </div>
-                <% if pl[:href] %>
-                  <a href="<%= pl[:href] %>" target="_blank" class="btn btn-sm">Open in Spotify</a>
-                <% end %>
+              </div>
+              <div class="playlist-tracks hidden" data-playlist-target="tracks">
               </div>
             </div>
           <% end %>

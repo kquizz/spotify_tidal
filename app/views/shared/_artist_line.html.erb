@@ -1,0 +1,13 @@
+<div class="flex items-center gap-4 p-4 border-b hover:bg-gray-50">
+  <div class="w-16 h-16 bg-gray-200 rounded flex items-center justify-center flex-shrink-0">
+    <span class="text-gray-500 text-sm">Artist</span>
+  </div>
+  <div class="flex-1">
+    <h3 class="text-lg font-semibold"><%= artist.name %></h3>
+    <p class="text-sm text-orange-600"><%= artist.albums.count %> albums • <%= artist.songs.count %> songs</p>
+  </div>
+  <div class="flex items-center gap-2">
+    <%= link_to "View Albums", artist_path(artist), class: "btn btn-sm btn-primary" %>
+    <%= link_to "Unsave", artist_path(artist), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+  </div>
+</div>

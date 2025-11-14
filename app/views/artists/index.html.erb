@@ -1,0 +1,14 @@
+<div class="text-center mb-8">
+  <h1>Saved Artists</h1>
+  <p class="text-muted mt-2">Your saved Spotify artists</p>
+</div>
+
+<% if @artists.any? %>
+  <div class="space-y-0">
+    <% @artists.each do |artist| %>
+      <%= render "shared/artist_line", artist: artist %>
+    <% end %>
+  </div>
+<% else %>
+  <p class="text-muted">No saved artists yet.</p>
+<% end %>

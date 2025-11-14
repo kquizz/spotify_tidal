@@ -1,0 +1,17 @@
+<div class="card">
+  <div class="card-body">
+    <% if song.album.image_url %>
+      <img src="<%= song.album.image_url %>" alt="<%= song.album.name %>" class="w-full h-32 object-cover rounded mb-2">
+    <% else %>
+      <div class="w-full h-32 bg-gray-200 rounded flex items-center justify-center mb-2">
+        <span class="text-gray-500 text-sm">No Art</span>
+      </div>
+    <% end %>
+    <h4 class="font-medium truncate"><%= song.name %></h4>
+    <p class="text-sm text-muted truncate"><%= song.artist.name %></p>
+    <p class="text-sm text-muted truncate"><%= song.album.name %></p>
+    <div class="mt-2">
+      <%= link_to "Spotify", "https://open.spotify.com/track/#{song.spotify_id}", target: "_blank", class: "text-blue-500 hover:text-blue-700 text-sm" %>
+    </div>
+  </div>
+</div>

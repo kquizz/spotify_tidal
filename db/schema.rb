@@ -10,7 +10,43 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_13_022537) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_13_040645) do
+  create_table "albums", force: :cascade do |t|
+    t.integer "artist_id", null: false
+    t.datetime "created_at", null: false
+    t.string "image_url"
+    t.string "name"
+    t.string "spotify_id"
+    t.datetime "updated_at", null: false
+    t.index ["artist_id"], name: "index_albums_on_artist_id"
+  end
+
+  create_table "artists", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name"
+    t.string "spotify_id"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "playlist_songs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "playlist_id", null: false
+    t.integer "song_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["playlist_id"], name: "index_playlist_songs_on_playlist_id"
+    t.index ["song_id"], name: "index_playlist_songs_on_song_id"
+  end
+
+  create_table "playlists", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "image_url"
+    t.string "name"
+    t.string "owner"
+    t.string "spotify_id"
+    t.integer "tracks_total"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"
@@ -18,6 +54,17 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_13_022537) do
     t.string "user_agent"
     t.integer "user_id", null: false
     t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
+  create_table "songs", force: :cascade do |t|
+    t.integer "album_id", null: false
+    t.integer "artist_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name"
+    t.string "spotify_id"
+    t.datetime "updated_at", null: false
+    t.index ["album_id"], name: "index_songs_on_album_id"
+    t.index ["artist_id"], name: "index_songs_on_artist_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -28,5 +75,10 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_13_022537) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "albums", "artists"
+  add_foreign_key "playlist_songs", "playlists"
+  add_foreign_key "playlist_songs", "songs"
   add_foreign_key "sessions", "users"
+  add_foreign_key "songs", "albums"
+  add_foreign_key "songs", "artists"
 end

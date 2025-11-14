@@ -1,4 +1,13 @@
 Rails.application.routes.draw do
+  get "artists/index"
+  get "artists/show"
+  get "artists/destroy"
+  get "albums/index"
+  get "albums/show"
+  get "albums/create"
+  get "playlists/index"
+  get "playlists/show"
+  get "playlists/create"
   resource :registration, only: [ :new, :create ]
   resource :session
   resources :passwords, param: :token
@@ -15,5 +24,10 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root to: "spotify#index"
   get "spotify", to: "spotify#index"
+  get "spotify/playlist/:id", to: "spotify#show", as: :spotify_playlist
   get "colors", to: "spotify#colors"
+
+  resources :playlists, only: [ :index, :show, :create, :destroy ]
+  resources :albums, only: [ :index, :show, :create, :destroy ]
+  resources :artists, only: [ :index, :show, :destroy ]
 end

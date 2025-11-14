@@ -1,0 +1,28 @@
+<div class="text-center mb-8">
+  <h1><%= @artist.name %></h1>
+  <p class="text-orange-600 mt-2"><%= @artist.albums.count %> albums • <%= @artist.songs.count %> songs</p>
+</div>
+
+<h2 class="text-xl font-semibold mb-4">Albums</h2>
+<% if @artist.albums.any? %>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <% @artist.albums.each do |album| %>
+      <%= render "shared/album_cell", album: album %>
+    <% end %>
+  </div>
+<% else %>
+  <p class="text-muted">No albums for this artist.</p>
+<% end %>
+
+<h2 class="text-xl font-semibold mb-4 mt-8">Songs</h2>
+<% if @artist.songs.any? %>
+  <div class="border rounded-lg overflow-hidden">
+    <div class="divide-y">
+      <% @artist.songs.each do |song| %>
+        <%= render "shared/song_line", song: song %>
+      <% end %>
+    </div>
+  </div>
+<% else %>
+  <p class="text-muted">No songs for this artist.</p>
+<% end %>
