@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_13_040645) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_14_035659) do
   create_table "albums", force: :cascade do |t|
     t.integer "artist_id", null: false
     t.datetime "created_at", null: false
@@ -62,6 +62,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_13_040645) do
     t.datetime "created_at", null: false
     t.string "name"
     t.string "spotify_id"
+    t.string "tidal_id"
     t.datetime "updated_at", null: false
     t.index ["album_id"], name: "index_songs_on_album_id"
     t.index ["artist_id"], name: "index_songs_on_artist_id"

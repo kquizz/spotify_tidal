@@ -1,0 +1,49 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://auth.tidal.com/v1/oauth2/token
+    body:
+      encoding: US-ASCII
+      string: grant_type=client_credentials
+    headers:
+      User-Agent:
+      - Faraday v2.14.0
+      Authorization:
+      - Basic MGozN1RaZ1lpOGJEUVBLbDp1ZU1rODRraWEyV1FzdXQwZTV0U0lSVHY5VHRsWTdqS1E0eVR4cHlrUDUwPQ==
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      content-type:
+      - application/json
+      content-length:
+      - '376'
+      connection:
+      - keep-alive
+      date:
+      - Fri, 14 Nov 2025 05:17:28 GMT
+      server:
+      - envoy
+      cache-control:
+      - no-cache
+      pragma:
+      - no-cache
+      x-envoy-upstream-service-time:
+      - '7'
+      x-cache:
+      - Miss from cloudfront
+      via:
+      - 1.1 dec7efe7f00856f413c4b38fc72adb5e.cloudfront.net (CloudFront)
+      x-amz-cf-pop:
+      - ORD58-P10
+      x-amz-cf-id:
+      - Nb05DzncMlKmPHiUNQoEBtioMi1AeYQcX2Hj0jO7RsBpqMiuHSnIeQ==
+    body:
+      encoding: UTF-8
+      string: '{"scope":"","token_type":"Bearer","access_token":"eyJraWQiOiJ2OU1GbFhqWSIsImFsZyI6IkVTMjU2In0.eyJ0eXBlIjoibzJfYWNjZXNzIiwic2NvcGUiOiIiLCJnVmVyIjowLCJzVmVyIjowLCJjaWQiOjIxMjM0LCJhdCI6IlRISVJEX1BBUlRZIiwiZXhwIjoxNzYzMTAxMDQ4LCJpc3MiOiJodHRwczovL2F1dGgudGlkYWwuY29tL3YxIn0.05k23iV6z5BC7Nx_0kUeRYY1ZlLSngP_Ave8TSuxZs_qwmKVsSdjRwNeaDuEzEyhtlqzu7hmknnI9fbr7V72hg","expires_in":3600}'
+  recorded_at: Fri, 14 Nov 2025 05:17:28 GMT
+recorded_with: VCR 6.3.1

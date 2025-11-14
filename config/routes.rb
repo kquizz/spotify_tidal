@@ -27,6 +27,7 @@ Rails.application.routes.draw do
   get "spotify/playlist/:id", to: "spotify#show", as: :spotify_playlist
   get "colors", to: "spotify#colors"
   get "sync", to: "spotify#sync"
+  post "sync/compare", to: "spotify#compare"
 
   resources :playlists, only: [ :index, :show, :create, :destroy ]
   resources :albums, only: [ :index, :show, :create, :destroy ]

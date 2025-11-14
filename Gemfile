@@ -56,6 +56,8 @@ group :development, :test do
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
   gem "rspec-rails"
+  gem "pry"
+  gem "pry-byebug"
 end
 
 group :development do

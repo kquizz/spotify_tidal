@@ -1,11 +1,15 @@
 <h1>Sync Playlists</h1>
 
+<%= button_to "Compare", sync_compare_path, method: :post, class: "mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" %>
+
 <table class="border-collapse border border-gray-300">
   <thead>
     <tr class="bg-gray-100">
       <th class="border border-gray-300 px-4 py-2">Playlist</th>
       <th class="border border-gray-300 px-4 py-2">Song</th>
       <th class="border border-gray-300 px-4 py-2">Artist</th>
+      <th class="border border-gray-300 px-4 py-2">Exists on Tidal</th>
+      <th class="border border-gray-300 px-4 py-2">Synced to Tidal</th>
     </tr>
   </thead>
   <tbody>
@@ -15,6 +19,8 @@
           <td class="border border-gray-300 px-4 py-2"><%= playlist.name %></td>
           <td class="border border-gray-300 px-4 py-2"><%= song.name %></td>
           <td class="border border-gray-300 px-4 py-2"><%= song.artist.name %></td>
+          <td class="border border-gray-300 px-4 py-2"><%= song.tidal_id.present? ? "Yes" : "Unknown" %></td>
+          <td class="border border-gray-300 px-4 py-2"><%= song.tidal_id.present? ? "Yes" : "No" %></td>
         </tr>
       <% end %>
     <% end %>

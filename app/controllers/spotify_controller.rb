@@ -25,4 +25,24 @@ class SpotifyController < ApplicationController
   def sync
     @playlists = Playlist.includes(:songs).all
   end
+
+  def compare
+    puts "Compare action called"
+    tidal_service = TidalService.new
+    updated_count = 0
+
+    Playlist.includes(:songs).find_each do |playlist|
+      playlist.songs.each do |song|
+        next if song.tidal_id.present?
+
+        tidal_track = tidal_service.search_track(song.name, song.artist.name)
+        if tidal_track && tidal_track["id"]
+          song.update(tidal_id: tidal_track["id"])
+          updated_count += 1
+        end
+      end
+    end
+
+    redirect_to sync_path, notice: "Compared #{updated_count} songs with Tidal"
+  end
 end
