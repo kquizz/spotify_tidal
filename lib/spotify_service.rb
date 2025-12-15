@@ -32,7 +32,7 @@ class SpotifyService
     token = fetch_access_token
     return [] unless token
 
-    resp = Faraday.get "#{SPOTIFY_API_BASE}/users/#{user_id}/playlists", { limit: limit }, { "Authorization" => "Bearer #{token}" }
+    resp = Faraday.get "#{SPOTIFY_API_BASE}/users/#{CGI.escape(user_id)}/playlists", { limit: limit }, { "Authorization" => "Bearer #{token}" }
     return [] unless resp.success?
 
     json = JSON.parse(resp.body)
@@ -48,28 +48,42 @@ class SpotifyService
     end
   end
 
-  def playlist_tracks(playlist_id, limit: 50)
+  def playlist_tracks(playlist_id, limit: 100)
     token = fetch_access_token
     return [] unless token
 
-    resp = Faraday.get "#{SPOTIFY_API_BASE}/playlists/#{playlist_id}/tracks", { limit: limit }, { "Authorization" => "Bearer #{token}" }
-    return [] unless resp.success?
+    all_tracks = []
+    offset = 0
+    
+    loop do
+      resp = Faraday.get "#{SPOTIFY_API_BASE}/playlists/#{playlist_id}/tracks", { limit: limit, offset: offset }, { "Authorization" => "Bearer #{token}" }
+      return all_tracks unless resp.success?
 
-    json = JSON.parse(resp.body)
-    json["items"].map do |item|
-      track = item["track"]
-      next unless track
-      {
-        id: track["id"],
-        name: track["name"],
-        artists: track.dig("artists", 0, "name"),
-        artist_id: track.dig("artists", 0, "id"),
-        album: track.dig("album", "name"),
-        album_id: track.dig("album", "id"),
-        album_image: track.dig("album", "images", 1, "url"),
-        href: track["external_urls"] && track["external_urls"]["spotify"]
-      }
-    end.compact
+      json = JSON.parse(resp.body)
+      tracks = json["items"].map do |item|
+        track = item["track"]
+        next unless track
+        {
+          id: track["id"],
+          name: track["name"],
+          artists: track.dig("artists", 0, "name"),
+          artist_id: track.dig("artists", 0, "id"),
+          album: track.dig("album", "name"),
+          album_id: track.dig("album", "id"),
+          album_image: track.dig("album", "images", 1, "url"),
+          href: track["external_urls"] && track["external_urls"]["spotify"],
+          isrc: track["external_ids"] && track["external_ids"]["isrc"]
+        }
+      end.compact
+      
+      all_tracks.concat(tracks)
+      
+      # Check if there are more tracks to fetch
+      break if json["next"].nil?
+      offset += limit
+    end
+    
+    all_tracks
   end
 
   def playlists(limit: 50)

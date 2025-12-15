@@ -1,31 +1,107 @@
-<h1>Sync Playlists</h1>
+<div class="max-w-7xl mx-auto">
+  <div class="text-center mb-16 fade-in relative">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[100px] -z-10"></div>
+    <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-gray-200 to-gray-500 bg-clip-text text-transparent tracking-tighter">
+      Sync Status
+    </h1>
+    <p class="text-gray-400 mt-4 text-xl font-light max-w-2xl mx-auto">Manage your playlist synchronization between Spotify and Tidal.</p>
+  </div>
 
-<%= button_to "Compare", sync_compare_path, method: :post, class: "mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" %>
-
-<table class="border-collapse border border-gray-300">
-  <thead>
-    <tr class="bg-gray-100">
-      <th class="border border-gray-300 px-4 py-2">Playlist</th>
-      <th class="border border-gray-300 px-4 py-2">Song</th>
-      <th class="border border-gray-300 px-4 py-2">Artist</th>
-      <th class="border border-gray-300 px-4 py-2">Exists on Tidal</th>
-      <th class="border border-gray-300 px-4 py-2">Synced to Tidal</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @playlists.each do |playlist| %>
-      <% playlist.songs.each do |song| %>
-        <tr>
-          <td class="border border-gray-300 px-4 py-2"><%= playlist.name %></td>
-          <td class="border border-gray-300 px-4 py-2"><%= song.name %></td>
-          <td class="border border-gray-300 px-4 py-2"><%= song.artist.name %></td>
-          <td class="border border-gray-300 px-4 py-2"><%= song.tidal_id.present? ? "Yes" : "Unknown" %></td>
-          <td class="border border-gray-300 px-4 py-2"><%= song.tidal_id.present? ? "Yes" : "No" %></td>
-        </tr>
+  <div class="flex flex-wrap justify-center gap-4 mb-12 fade-in backdrop-blur-xl bg-white/5 border border-white/10 p-4 rounded-full max-w-fit mx-auto shadow-2xl" style="animation-delay: 0.1s;">
+    <% unless Current.user.tidal_connected? %>
+      <%= link_to "/auth/tidal", class: "group relative px-6 py-3 bg-white text-black font-bold rounded-full transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] hover:-translate-y-0.5" do %>
+        <span class="flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h6v18h-6M10 17l5-5-5-5M13.8 12H3"/>
+          </svg>
+          Connect Tidal
+        </span>
       <% end %>
     <% end %>
-  </tbody>
-</table>
 
-<!-- Future sync button -->
-<!-- <button>Sync to Tidal</button> -->
+    <%= button_to compare_sync_path, method: :post, class: "group relative px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-white font-medium transition-all duration-300 overflow-hidden" do %>
+      <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <span class="relative flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-cyan-400">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        Lookup Tracks
+      </span>
+    <% end %>
+
+    <% if Current.user.tidal_connected? %>
+      <%= button_to sync_all_path, method: :post, class: "group relative px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-full transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] hover:-translate-y-0.5" do %>
+        <span class="flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+            <path d="m21 2-2 2 4 4"></path>
+            <path d="m21 2-7 7"></path>
+          </svg>
+          Sync All to Tidal
+        </span>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl overflow-hidden shadow-2xl fade-in" style="animation-delay: 0.2s;">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead>
+          <tr class="border-b border-white/10 bg-white/5">
+            <th class="px-8 py-6 text-sm font-semibold text-gray-400 uppercase tracking-wider">Playlist</th>
+            <th class="px-8 py-6 text-sm font-semibold text-gray-400 uppercase tracking-wider text-center">Tracks</th>
+            <th class="px-8 py-6 text-sm font-semibold text-gray-400 uppercase tracking-wider text-center">Tidal Status</th>
+            <th class="px-8 py-6 text-sm font-semibold text-gray-400 uppercase tracking-wider text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-white/5">
+          <% @playlists.each do |playlist| %>
+            <tr class="group hover:bg-white/5 transition-colors duration-200">
+              <td class="px-8 py-6">
+                <div class="flex items-center gap-4">
+                  <% if playlist.image_url %>
+                    <img src="<%= playlist.image_url %>" class="w-12 h-12 rounded-lg object-cover shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  <% else %>
+                    <div class="w-12 h-12 rounded-lg bg-gray-800 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500">
+                        <path d="M9 18V5l12-2v13"></path>
+                        <circle cx="6" cy="18" r="3"></circle>
+                        <circle cx="18" cy="16" r="3"></circle>
+                      </svg>
+                    </div>
+                  <% end %>
+                  <div>
+                    <div class="font-bold text-white text-lg"><%= playlist.name %></div>
+                    <div class="text-sm text-gray-500"><%= playlist.owner %></div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-8 py-6 text-center">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-gray-300 border border-white/10">
+                  <%= playlist.songs.count %>
+                </span>
+              </td>
+              <td class="px-8 py-6 text-center">
+                <% matched_count = playlist.songs.where.not(tidal_id: nil).count %>
+                <% percentage = playlist.songs.count > 0 ? (matched_count.to_f / playlist.songs.count * 100).round : 0 %>
+                
+                <div class="flex flex-col items-center gap-2">
+                  <div class="w-32 h-2 bg-gray-800 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-cyan-500 to-purple-500 transition-all duration-500" style="width: <%= percentage %>%"></div>
+                  </div>
+                  <span class="text-xs font-medium <%= percentage == 100 ? 'text-green-400' : 'text-gray-400' %>">
+                    <%= matched_count %> / <%= playlist.songs.count %> matched
+                  </span>
+                </div>
+              </td>
+              <td class="px-8 py-6 text-right">
+                <%= link_to "View Details", spotify_playlist_path(playlist), class: "text-sm font-medium text-cyan-400 hover:text-cyan-300 transition-colors" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

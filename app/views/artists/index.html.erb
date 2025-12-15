@@ -1,14 +1,36 @@
-<div class="text-center mb-8">
-  <h1>Saved Artists</h1>
-  <p class="text-muted mt-2">Your saved Spotify artists</p>
-</div>
-
-<% if @artists.any? %>
-  <div class="space-y-0">
-    <% @artists.each do |artist| %>
-      <%= render "shared/artist_line", artist: artist %>
-    <% end %>
+<div class="max-w-7xl mx-auto">
+  <div class="text-center mb-12 fade-in">
+    <h1 class="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
+      Your Artists
+    </h1>
+    <p class="text-muted mt-3 text-lg">Your collection of saved Spotify artists</p>
   </div>
-<% else %>
-  <p class="text-muted">No saved artists yet.</p>
-<% end %>
+
+  <% if @artists.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <% @artists.each_with_index do |artist, index| %>
+        <div class="fade-in" style="animation-delay: <%= index * 0.05 %>s;">
+          <%= render "shared/artist_line", artist: artist %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="card max-w-md mx-auto">
+      <div class="card-body text-center py-12">
+        <div class="w-20 h-20 bg-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2">No saved artists yet</h3>
+        <p class="text-muted mb-8">Start discovering and following your favorite artists!</p>
+        <a href="<%= root_path %>" class="btn btn-primary">
+          Explore Music
+        </a>
+      </div>
+    </div>
+  <% end %>
+</div>

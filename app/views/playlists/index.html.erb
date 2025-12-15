@@ -1,27 +1,64 @@
-<div class="text-center mb-8">
-  <h1>Saved Playlists</h1>
-  <p class="text-muted mt-2">Your saved Spotify playlists</p>
-</div>
+<div class="max-w-7xl mx-auto">
+  <div class="text-center mb-12 fade-in">
+    <h1 class="bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent">
+      Your Playlists
+    </h1>
+    <p class="text-muted mt-3 text-lg">Your collection of Spotify playlists</p>
+  </div>
 
-<% if @playlists.any? %>
-  <div class="card mx-auto max-w-4xl">
-    <div class="card-body">
-      <div class="saved-playlists-grid">
-        <% @playlists.each do |playlist| %>
-          <%= render "shared/playlist_line", playlist: playlist %>
+  <% if @playlists.any? %>
+    <div class="flex justify-center gap-4 mb-12 fade-in" style="animation-delay: 0.1s;">
+      <% if Current.user.tidal_connected? %>
+        <div class="inline-flex items-center gap-2 px-6 py-3 bg-green-500/10 text-green-400 rounded-full border border-green-500/20 backdrop-blur-sm shadow-lg">
+          <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+          <span class="font-medium">Tidal Connected</span>
+        </div>
+      <% else %>
+        <%= link_to "/auth/tidal", class: "inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-black to-gray-900 text-white rounded-full border border-white/20 hover:border-white/40 transition-all duration-300 font-medium shadow-xl hover:shadow-2xl hover:scale-105" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h6v18h-6M10 17l5-5-5-5M13.8 12H3"/>
+          </svg>
+          Connect Tidal
         <% end %>
+      <% end %>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @playlists.each_with_index do |playlist, index| %>
+        <div class="group relative bg-white/5 border border-white/5 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/50 fade-in" style="animation-delay: <%= 0.15 + (index * 0.05) %>s;">
+          <%= render "shared/playlist_line", playlist: playlist %>
+          
+          <% if Current.user.tidal_connected? %>
+            <div class="mt-6 pt-6 border-t border-white/5 flex justify-end">
+              <%= button_to sync_to_tidal_playlist_path(playlist), method: :post, class: "inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-black bg-cyan-400 hover:bg-cyan-300 rounded-full transition-all shadow-lg hover:shadow-cyan-400/50", data: { turbo: false } do %>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                  <path d="m21 2-2 2 4 4"></path>
+                  <path d="m21 2-7 7"></path>
+                </svg>
+                Sync to Tidal
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="card max-w-md mx-auto fade-in">
+      <div class="card-body text-center py-12">
+        <div class="w-20 h-20 bg-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500">
+            <path d="M9 18V5l12-2v13"></path>
+            <circle cx="6" cy="18" r="3"></circle>
+            <circle cx="18" cy="16" r="3"></circle>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2">No saved playlists yet</h3>
+        <p class="text-muted mb-8">Start by searching for user playlists and save the ones you like!</p>
+        <a href="<%= root_path %>" class="btn btn-primary w-full">
+          Search Playlists
+        </a>
       </div>
     </div>
-  </div>
-<% else %>
-  <div class="card mx-auto max-w-2xl">
-    <div class="card-body text-center">
-      <div class="empty-state">
-        <div class="empty-state-icon">🎵</div>
-        <h3 class="empty-state-title">No saved playlists yet</h3>
-        <p class="empty-state-text">Start by searching for user playlists and save the ones you like!</p>
-        <a href="<%= root_path %>" class="btn btn-primary mt-4">Search Playlists</a>
-      </div>
-    </div>
-  </div>
-<% end %>
+  <% end %>
+</div>

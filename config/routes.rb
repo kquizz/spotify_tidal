@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "queue/index"
   get "artists/index"
   get "artists/show"
   get "artists/destroy"
@@ -12,6 +13,8 @@ Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  get "/auth/tidal", to: "tidal_auth#request_authorization"
+  get "/auth/tidal/callback", to: "tidal_auth#callback"
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
@@ -25,11 +28,18 @@ Rails.application.routes.draw do
   root to: "spotify#index"
   get "spotify", to: "spotify#index"
   get "spotify/playlist/:id", to: "spotify#show", as: :spotify_playlist
-  get "colors", to: "spotify#colors"
-  get "sync", to: "spotify#sync"
-  post "sync/compare", to: "spotify#compare"
 
-  resources :playlists, only: [ :index, :show, :create, :destroy ]
+  get "sync", to: "spotify#sync"
+  post "sync/compare", to: "spotify#compare", as: :compare_sync
+  post "sync/sync_all", to: "spotify#sync_all", as: :sync_all
+  get "queue", to: "queue#index"
+
+  resources :playlists, only: [ :index, :show, :create, :destroy ] do
+    member do
+      post :sync_to_tidal
+      post :lookup_tracks
+    end
+  end
   resources :albums, only: [ :index, :show, :create, :destroy ]
   resources :artists, only: [ :index, :show, :destroy ]
 end

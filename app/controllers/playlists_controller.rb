@@ -9,10 +9,12 @@ class PlaylistsController < ApplicationController
 
   def create
     @playlist = Playlist.new(playlist_params)
+    @playlist.import_status = 'pending'
+    
     if @playlist.save
-      # Optionally save the tracks
-      save_playlist_tracks(@playlist)
-      redirect_to playlists_path, notice: "Playlist saved successfully."
+      # Enqueue background job to import tracks
+      PlaylistImportJob.perform_later(@playlist.id)
+      redirect_to playlists_path, notice: "Playlist saved! Importing tracks in background..."
     else
       redirect_to root_path, alert: "Failed to save playlist."
     end
@@ -22,6 +24,55 @@ class PlaylistsController < ApplicationController
     @playlist = Playlist.find(params[:id])
     @playlist.destroy
     redirect_to playlists_path, notice: "Playlist deleted successfully."
+  end
+
+  def sync_to_tidal
+    @playlist = Playlist.find(params[:id])
+    
+    unless Current.user.tidal_connected?
+      redirect_to playlists_path, alert: "Please connect your Tidal account first."
+      return
+    end
+
+    service = TidalService.new(user: Current.user)
+    
+    # Create playlist on Tidal
+    tidal_playlist = service.create_playlist(@playlist.name, "Synced from Spotify via SpotifyTidalApp")
+    
+    if tidal_playlist
+      # Collect Tidal track IDs
+      tidal_track_ids = @playlist.songs.map(&:tidal_id).compact
+      
+      if tidal_track_ids.any?
+        success = service.add_tracks_to_playlist(tidal_playlist["uuid"], tidal_track_ids)
+        if success
+          redirect_to playlist_path(@playlist), notice: "Playlist synced to Tidal successfully!"
+        else
+          redirect_to playlist_path(@playlist), alert: "Playlist created but failed to add tracks."
+        end
+      else
+        redirect_to playlist_path(@playlist), notice: "Playlist created on Tidal (no tracks found to sync)."
+      end
+    else
+      redirect_to playlist_path(@playlist), alert: "Failed to create playlist on Tidal."
+    end
+  end
+
+  def lookup_tracks
+    @playlist = Playlist.find(params[:id])
+    
+    # Only lookup songs without a Tidal ID
+    songs_to_lookup = @playlist.songs.where(tidal_id: nil)
+    
+    songs_to_lookup.each do |song|
+      TidalLookupJob.perform_later(song.id)
+    end
+    
+    if songs_to_lookup.any?
+      redirect_to playlist_path(@playlist), notice: "Tidal lookup started for #{songs_to_lookup.count} track#{songs_to_lookup.count == 1 ? '' : 's'}..."
+    else
+      redirect_to playlist_path(@playlist), notice: "All tracks already have Tidal matches!"
+    end
   end
 
   private

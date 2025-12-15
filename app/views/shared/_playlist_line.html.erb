@@ -1,19 +1,26 @@
-<div class="flex items-start gap-4 p-4 border-b hover:bg-gray-50">
+<div class="flex items-center gap-4">
   <% if playlist.image_url %>
-    <img src="<%= playlist.image_url %>" alt="<%= playlist.name %>" width="32" height="32" class="rounded object-cover flex-shrink-0">
+    <img src="<%= playlist.image_url %>" alt="<%= playlist.name %>" class="w-16 h-16 rounded-lg object-cover shadow-lg group-hover:scale-105 transition-transform duration-300">
   <% else %>
-    <div class="w-8 h-8 bg-gray-200 rounded flex items-center justify-center flex-shrink-0">
-      <span class="text-gray-500 text-xs">No Image</span>
+    <div class="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center shadow-lg">
+      <span class="text-gray-600 text-xs">No Image</span>
     </div>
   <% end %>
-  <div class="flex-1">
-    <h3 class="text-lg font-semibold"><%= playlist.name %></h3>
-    <div class="text-sm text-muted mt-1">
-      <%= playlist.tracks_total %> tracks • Owner: <%= playlist.owner %>
-    </div>
-    <div class="flex flex-nowrap gap-2 mt-2">
-      <%= link_to "View Tracks", playlist_path(playlist), class: "btn btn-sm btn-primary" %>
-      <%= button_to "Unsave", playlist_path(playlist), method: :delete, class: "btn btn-sm btn-danger", data: { confirm: "Are you sure?" } %>
+  
+  <div class="flex-1 min-w-0">
+    <h3 class="text-lg font-bold text-white truncate group-hover:text-green-400 transition-colors"><%= playlist.name %></h3>
+    <div class="text-sm text-gray-400 mt-1 truncate">
+      <span class="text-gray-500">By</span> <%= playlist.owner %> • <span class="text-gray-500"><%= playlist.tracks_total %> tracks</span>
     </div>
   </div>
+</div>
+
+<div class="flex gap-2 mt-4">
+  <%= link_to playlist_path(playlist), class: "flex-1 px-3 py-2 text-sm font-medium text-center text-white bg-white/10 hover:bg-white/20 rounded-lg transition-colors" do %>
+    View Tracks
+  <% end %>
+  
+  <%= button_to playlist_path(playlist), method: :delete, class: "px-3 py-2 text-sm font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors", data: { confirm: "Are you sure?" } do %>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+  <% end %>
 </div>

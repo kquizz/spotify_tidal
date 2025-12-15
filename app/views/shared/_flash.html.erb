@@ -1,11 +1,19 @@
 <% if flash.any? %>
-  <div class="toaster">
+  <div class="fixed top-24 right-6 z-50 flex flex-col gap-4">
     <% flash.each do |type, message| %>
-      <% cls = type.to_s == 'notice' ? 'toast toast-success' : 'toast toast-destructive' %>
-      <div class="<%= cls %>" role="status">
-        <div class="toast-content">
-          <p><%= message %></p>
-        </div>
+      <% 
+        base_classes = "px-6 py-4 rounded-lg shadow-xl backdrop-blur-md border flex items-center gap-3 animate-in slide-in-from-right fade-in duration-300"
+        type_classes = if type.to_s == 'notice' 
+          "bg-green-500/10 border-green-500/20 text-green-400"
+        else 
+          "bg-red-500/10 border-red-500/20 text-red-400"
+        end
+      %>
+      <div class="<%= base_classes %> <%= type_classes %>" role="status">
+        <p class="font-medium"><%= message %></p>
+        <button onclick="this.parentElement.remove()" class="ml-4 opacity-50 hover:opacity-100 transition-opacity">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
       </div>
     <% end %>
   </div>

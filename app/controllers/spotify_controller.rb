@@ -19,8 +19,7 @@ class SpotifyController < ApplicationController
     end
   end
 
-  def colors
-  end
+
 
   def sync
     @playlists = Playlist.includes(:songs).all
@@ -28,21 +27,28 @@ class SpotifyController < ApplicationController
 
   def compare
     puts "Compare action called"
-    tidal_service = TidalService.new
-    updated_count = 0
+    enqueued_count = 0
 
     Playlist.includes(:songs).find_each do |playlist|
       playlist.songs.each do |song|
         next if song.tidal_id.present?
 
-        tidal_track = tidal_service.search_track(song.name, song.artist.name)
-        if tidal_track && tidal_track["id"]
-          song.update(tidal_id: tidal_track["id"])
-          updated_count += 1
-        end
+        TidalLookupJob.perform_later(song.id)
+        enqueued_count += 1
       end
     end
 
-    redirect_to sync_path, notice: "Compared #{updated_count} songs with Tidal"
+    redirect_to sync_path, notice: "Enqueued #{enqueued_count} songs for Tidal lookup"
+  end
+
+  def sync_all
+    unless Current.user.tidal_connected?
+      redirect_to sync_path, alert: "Please connect your Tidal account first."
+      return
+    end
+
+    # Enqueue background job for Tidal sync
+    TidalSyncJob.perform_later(Current.user.id)
+    redirect_to sync_path, notice: "Tidal sync started in background! This may take a few minutes..."
   end
 end
