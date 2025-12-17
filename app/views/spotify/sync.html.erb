@@ -41,6 +41,9 @@
           Sync All to Tidal
         </span>
       <% end %>
+      <%= button_to retry_all_failed_imports_playlists_path, method: :post, class: "group relative px-6 py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-full transition-all duration-300" do %>
+        Retry All Failed Imports
+      <% end %>
     <% end %>
   </div>
 

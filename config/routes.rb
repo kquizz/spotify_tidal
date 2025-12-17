@@ -15,6 +15,11 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   get "/auth/tidal", to: "tidal_auth#request_authorization"
   get "/auth/tidal/callback", to: "tidal_auth#callback"
+  get "/auth/spotify", to: "spotify_auth#request_authorization"
+  get "/auth/spotify/callback", to: "spotify_auth#callback"
+
+  post "/disconnect/spotify", to: "connections#disconnect_spotify", as: :disconnect_spotify
+  post "/disconnect/tidal", to: "connections#disconnect_tidal", as: :disconnect_tidal
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
@@ -36,8 +41,12 @@ Rails.application.routes.draw do
 
   resources :playlists, only: [ :index, :show, :create, :destroy ] do
     member do
+      post :retry_import
       post :sync_to_tidal
       post :lookup_tracks
+    end
+    collection do
+      post :retry_all_failed_imports
     end
   end
   resources :albums, only: [ :index, :show, :create, :destroy ]

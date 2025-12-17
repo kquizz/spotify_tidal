@@ -1,8 +1,24 @@
 class SpotifyController < ApplicationController
   def index
     @saved_playlist_ids = []
+
+    # If the current user is connected to Spotify, fetch their own playlists
+    @my_playlists = []
+    if Current.user&.spotify_connected?
+      begin
+        service = SpotifyService.new(user: Current.user)
+        @my_playlists = service.playlists
+        my_ids = @my_playlists.map { |p| p[:id] }
+        @saved_playlist_ids = Playlist.where(spotify_id: my_ids).pluck(:spotify_id) if my_ids.any?
+      rescue => e
+        Rails.logger.error("Failed to fetch current user's Spotify playlists: #{e.message}")
+        @my_playlists = []
+      end
+    end
+
+    # Existing search-by-user functionality
     if params[:user_id].present?
-      service = SpotifyService.new
+      service = SpotifyService.new(user: Current.user)
       @searched_playlists = service.user_playlists(params[:user_id])
       @searched_user_id = params[:user_id]
       playlist_ids = @searched_playlists.map { |p| p[:id] }
@@ -11,7 +27,7 @@ class SpotifyController < ApplicationController
   end
 
   def show
-    service = SpotifyService.new
+    service = SpotifyService.new(user: Current.user)
     @playlist_tracks = service.playlist_tracks(params[:id])
 
     respond_to do |format|

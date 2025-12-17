@@ -1,3 +1,10 @@
+<div class="fixed top-6 right-6 space-y-3 z-50">
+  <% flash.each do |type, message| %>
+    <div data-controller="toast" class="transition-opacity duration-300 ease-out opacity-0 bg-black/80 text-white px-4 py-2 rounded shadow-lg">
+      <%= message %>
+    </div>
+  <% end %>
+</div>
 <% if flash.any? %>
   <div class="fixed top-24 right-6 z-50 flex flex-col gap-4">
     <% flash.each do |type, message| %>

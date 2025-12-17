@@ -4,13 +4,13 @@ class PlaylistsController < ApplicationController
   end
 
   def show
-    @playlist = Playlist.find(params[:id])
+    @playlist = Playlist.includes(songs: [:artist, :album]).find(params[:id])
   end
 
   def create
     @playlist = Playlist.new(playlist_params)
-    @playlist.import_status = 'pending'
-    
+    @playlist.import_status = "pending"
+
     if @playlist.save
       # Enqueue background job to import tracks
       PlaylistImportJob.perform_later(@playlist.id)
@@ -28,21 +28,21 @@ class PlaylistsController < ApplicationController
 
   def sync_to_tidal
     @playlist = Playlist.find(params[:id])
-    
+
     unless Current.user.tidal_connected?
       redirect_to playlists_path, alert: "Please connect your Tidal account first."
       return
     end
 
     service = TidalService.new(user: Current.user)
-    
+
     # Create playlist on Tidal
     tidal_playlist = service.create_playlist(@playlist.name, "Synced from Spotify via SpotifyTidalApp")
-    
+
     if tidal_playlist
       # Collect Tidal track IDs
       tidal_track_ids = @playlist.songs.map(&:tidal_id).compact
-      
+
       if tidal_track_ids.any?
         success = service.add_tracks_to_playlist(tidal_playlist["uuid"], tidal_track_ids)
         if success
@@ -58,16 +58,39 @@ class PlaylistsController < ApplicationController
     end
   end
 
+  def retry_import
+    @playlist = Playlist.find(params[:id])
+
+    unless @playlist
+      redirect_to playlists_path, alert: "Playlist not found."
+      return
+    end
+
+    @playlist.update(import_status: "pending")
+    PlaylistImportJob.perform_later(@playlist.id)
+    redirect_to playlist_path(@playlist), notice: "Re-enqueued playlist import."
+  end
+
+  def retry_all_failed_imports
+    failed_playlists = Playlist.where(import_status: 'failed')
+    failed_playlists.find_each do |pl|
+      pl.update(import_status: 'pending')
+      PlaylistImportJob.perform_later(pl.id)
+    end
+
+    redirect_to sync_path, notice: "Enqueued import for #{failed_playlists.size} failed playlist#{failed_playlists.size == 1 ? '' : 's'}."
+  end
+
   def lookup_tracks
     @playlist = Playlist.find(params[:id])
-    
+
     # Only lookup songs without a Tidal ID
     songs_to_lookup = @playlist.songs.where(tidal_id: nil)
-    
+
     songs_to_lookup.each do |song|
       TidalLookupJob.perform_later(song.id)
     end
-    
+
     if songs_to_lookup.any?
       redirect_to playlist_path(@playlist), notice: "Tidal lookup started for #{songs_to_lookup.count} track#{songs_to_lookup.count == 1 ? '' : 's'}..."
     else
@@ -82,7 +105,7 @@ class PlaylistsController < ApplicationController
   end
 
   def save_playlist_tracks(playlist)
-    service = SpotifyService.new
+    service = SpotifyService.new(user: Current.user)
     tracks = service.playlist_tracks(playlist.spotify_id)
     tracks.each do |track_data|
       artist = Artist.find_or_create_by(spotify_id: track_data[:artist_id]) do |a|

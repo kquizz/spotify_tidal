@@ -8,10 +8,14 @@
 
   <% if @playlists.any? %>
     <div class="flex justify-center gap-4 mb-12 fade-in" style="animation-delay: 0.1s;">
+      <%# Tidal connect / status %>
       <% if Current.user.tidal_connected? %>
         <div class="inline-flex items-center gap-2 px-6 py-3 bg-green-500/10 text-green-400 rounded-full border border-green-500/20 backdrop-blur-sm shadow-lg">
           <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
           <span class="font-medium">Tidal Connected</span>
+          <%= button_to disconnect_tidal_path, method: :post, class: "ml-3 px-3 py-1 bg-red-500 text-white rounded text-sm" do %>
+            Disconnect
+          <% end %>
         </div>
       <% else %>
         <%= link_to "/auth/tidal", class: "inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-black to-gray-900 text-white rounded-full border border-white/20 hover:border-white/40 transition-all duration-300 font-medium shadow-xl hover:shadow-2xl hover:scale-105" do %>
@@ -19,6 +23,24 @@
             <path d="M15 3h6v18h-6M10 17l5-5-5-5M13.8 12H3"/>
           </svg>
           Connect Tidal
+        <% end %>
+      <% end %>
+
+      <%# Spotify connect / disconnect %>
+      <% if Current.user.spotify_access_token.present? %>
+        <div class="inline-flex items-center gap-2 px-6 py-3 bg-green-500/10 text-green-400 rounded-full border border-green-500/20 backdrop-blur-sm shadow-lg">
+          <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+          <span class="font-medium">Spotify Connected</span>
+          <%= button_to disconnect_spotify_path, method: :post, class: "ml-3 px-3 py-1 bg-red-500 text-white rounded text-sm" do %>
+            Disconnect
+          <% end %>
+        </div>
+      <% else %>
+        <%= link_to "/auth/spotify", class: "inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full border border-white/20 hover:border-white/40 transition-all duration-300 font-medium shadow-xl hover:shadow-2xl hover:scale-105" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/>
+          </svg>
+          Connect Spotify
         <% end %>
       <% end %>
     </div>

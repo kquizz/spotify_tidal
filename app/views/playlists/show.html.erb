@@ -78,6 +78,11 @@
           Create Playlist on Tidal
         </span>
       <% end %>
+      <% if @playlist.import_status == 'failed' || @playlist.import_status == 'pending' %>
+        <%= button_to retry_import_playlist_path(@playlist), method: :post, class: "group relative px-6 py-3 bg-yellow-400 hover:bg-yellow-300 text-black font-bold rounded-full transition-all duration-300" do %>
+          Retry Import
+        <% end %>
+      <% end %>
     <% else %>
       <%= link_to "/auth/tidal", class: "group relative px-8 py-3 bg-white text-black font-bold rounded-full transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] hover:-translate-y-0.5" do %>
         <span class="flex items-center gap-2">
@@ -88,6 +93,31 @@
         </span>
       <% end %>
     <% end %>
+  </div>
+
+  <% if @playlist.last_import_error.present? %>
+    <div class="max-w-5xl mx-auto mb-6 px-8">
+      <div class="p-4 bg-red-500/10 border border-red-500/20 text-red-300 rounded-lg">
+        <strong class="text-red-200">Import error:</strong>
+        <div class="mt-1 text-sm break-words flex items-start gap-3">
+          <div class="flex-1 truncate"><%= @playlist.last_import_error %></div>
+          <button data-action="click->error-modal#open" data-error="<%= j @playlist.last_import_error %>" class="ml-2 text-xs text-white bg-red-500/80 px-3 py-1 rounded">View</button>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Error Modal -->
+  <div data-controller="error-modal" data-error-modal-target="modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-black/60" data-action="click->error-modal#close"></div>
+    <div class="bg-white max-w-2xl w-full rounded-lg p-6 z-10">
+      <h3 class="text-lg font-bold mb-2">Import error details</h3>
+      <pre data-error-modal-target="content" class="whitespace-pre-wrap text-sm text-gray-800 p-2 bg-gray-100 rounded h-48 overflow-auto"></pre>
+      <div class="mt-4 flex gap-3 justify-end">
+        <button type="button" data-action="click->error-modal#copy" class="px-4 py-2 bg-green-500 text-white rounded">Copy</button>
+        <button type="button" data-action="click->error-modal#close" class="px-4 py-2 bg-gray-200 rounded">Close</button>
+      </div>
+    </div>
   </div>
 
   <div class="backdrop-blur-xl bg-white/5 border border-white/5 rounded-3xl overflow-hidden mx-4 md:mx-0 mb-20 fade-in shadow-2xl" style="animation-delay: 0.2s;">

@@ -2,10 +2,11 @@ class SpotifyService
   SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
   SPOTIFY_API_BASE = "https://api.spotify.com/v1"
 
-  def initialize(client_id: ENV["SPOTIFY_CLIENT_ID"], client_secret: ENV["SPOTIFY_CLIENT_SECRET"], refresh_token: ENV["SPOTIFY_REFRESH_TOKEN"])
+  def initialize(user: nil, client_id: ENV["SPOTIFY_CLIENT_ID"], client_secret: ENV["SPOTIFY_CLIENT_SECRET"], refresh_token: ENV["SPOTIFY_REFRESH_TOKEN"])
     @client_id = client_id
     @client_secret = client_secret
     @refresh_token = refresh_token
+    @user = user
   end
 
   def liked_tracks(limit: 50)
@@ -54,10 +55,13 @@ class SpotifyService
 
     all_tracks = []
     offset = 0
-    
+
     loop do
       resp = Faraday.get "#{SPOTIFY_API_BASE}/playlists/#{playlist_id}/tracks", { limit: limit, offset: offset }, { "Authorization" => "Bearer #{token}" }
-      return all_tracks unless resp.success?
+      unless resp.success?
+        Rails.logger.error("SpotifyService#playlist_tracks: failed to fetch tracks for playlist=#{playlist_id} status=#{resp.status} body=#{resp.body}") if defined?(Rails)
+        return nil
+      end
 
       json = JSON.parse(resp.body)
       tracks = json["items"].map do |item|
@@ -75,14 +79,14 @@ class SpotifyService
           isrc: track["external_ids"] && track["external_ids"]["isrc"]
         }
       end.compact
-      
+
       all_tracks.concat(tracks)
-      
+
       # Check if there are more tracks to fetch
       break if json["next"].nil?
       offset += limit
     end
-    
+
     all_tracks
   end
 
@@ -108,15 +112,31 @@ class SpotifyService
   private
 
   def fetch_access_token
-    return nil unless @client_id && @client_secret && @refresh_token
+    # Prefer refresh token from user if provided
+    if @user && @user.spotify_refresh_token.present?
+      refresh = @user.spotify_refresh_token
+    else
+      refresh = @refresh_token
+    end
+
+    return nil unless @client_id && @client_secret && refresh
 
     resp = Faraday.post(SPOTIFY_TOKEN_URL) do |req|
       req.headers["Authorization"] = "Basic " + Base64.strict_encode64("#{@client_id}:#{@client_secret}")
-      req.body = URI.encode_www_form(grant_type: "refresh_token", refresh_token: @refresh_token)
+      req.body = URI.encode_www_form(grant_type: "refresh_token", refresh_token: refresh)
     end
 
     return nil unless resp.success?
-    JSON.parse(resp.body)["access_token"]
+    body = JSON.parse(resp.body)
+    # If user provided token, update user's tokens if present
+    if @user && body["access_token"]
+      @user.update(
+        spotify_access_token: body["access_token"],
+        spotify_expires_at: Time.current + body["expires_in"].to_i.seconds
+      )
+      @user.update(spotify_refresh_token: body["refresh_token"]) if body["refresh_token"].present?
+    end
+    body["access_token"]
   rescue StandardError
     nil
   end

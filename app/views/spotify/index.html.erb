@@ -18,7 +18,7 @@
           </div>
           Search Public Playlists
         </h2>
-        <%= form_with method: :get, class: "space-y-6" do |form| %>
+        <%= form_with(method: :get, class: "space-y-6") do |form| %>
           <div class="relative group">
             <%= form.label :user_id, "Spotify Username", class: "block text-sm font-medium text-gray-400 mb-2 ml-1" %>
             <%= form.text_field :user_id, class: "w-full bg-black/40 border border-white/10 rounded-xl px-5 py-4 text-lg text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all shadow-inner", placeholder: "e.g., spotify, username123", autofocus: true %>
@@ -67,7 +67,7 @@
                     
                     <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
                       <% unless @saved_playlist_ids.include?(pl[:id]) %>
-                        <%= button_to playlists_path(playlist: { name: pl[:name], spotify_id: pl[:id], owner: pl[:owner], image_url: pl[:image], tracks_total: pl[:tracks_total] }), method: :post, class: "flex-1 bg-cyan-500 hover:bg-cyan-400 text-black font-bold py-2 px-4 rounded-lg text-sm transition-colors text-center" do %>
+                        <%= button_to(playlists_path(playlist: { name: pl[:name], spotify_id: pl[:id], owner: pl[:owner], image_url: pl[:image], tracks_total: pl[:tracks_total] }), method: :post, class: "flex-1 bg-cyan-500 hover:bg-cyan-400 text-black font-bold py-2 px-4 rounded-lg text-sm transition-colors text-center") do %>
                           Save
                         <% end %>
                       <% else %>
@@ -101,6 +101,60 @@
             <p class="text-gray-400">This user has no public playlists or the username may be incorrect.</p>
           </div>
         <% end %>
+      </div>
+    <% end %>
+
+    <% if @my_playlists.present? %>
+      <div class="fade-in mt-12" style="animation-delay: 0.2s;">
+        <div class="flex items-end justify-between mb-6">
+          <div>
+            <h3 class="text-2xl font-bold text-white mb-2">Your Spotify Playlists</h3>
+            <p class="text-gray-400">Playlists from your connected Spotify account</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <% @my_playlists.each_with_index do |pl, index| %>
+            <div class="group relative bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,0,0,0.5)] hover:-translate-y-1" style="animation-delay: <%= 0.1 + (index * 0.03) %>s;">
+              <div class="aspect-square relative overflow-hidden">
+                <%# No image currently provided by playlists endpoint in `playlists` method, so show placeholder %>
+                <div class="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="text-gray-600">
+                    <path d="M9 18V5l12-2v13"></path>
+                    <circle cx="6" cy="18" r="3"></circle>
+                    <circle cx="18" cy="16" r="3"></circle>
+                  </svg>
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
+
+                <div class="absolute bottom-0 left-0 right-0 p-6 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                  <h4 class="text-xl font-bold text-white mb-1 truncate"><%= pl[:name] %></h4>
+                  <p class="text-sm text-gray-300 mb-4"><%= pl[:tracks_total] %> tracks • <%= pl[:owner] || "you" %></p>
+
+                  <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                    <% unless @saved_playlist_ids.include?(pl[:id]) %>
+                      <%= button_to(playlists_path(playlist: { name: pl[:name], spotify_id: pl[:id], owner: pl[:owner], image_url: pl[:image], tracks_total: pl[:tracks_total] }), method: :post, class: "flex-1 bg-cyan-500 hover:bg-cyan-400 text-black font-bold py-2 px-4 rounded-lg text-sm transition-colors text-center") do %>
+                        Save
+                      <% end %>
+                    <% else %>
+                      <span class="flex-1 bg-green-500/20 border border-green-500/50 text-green-400 py-2 px-4 rounded-lg text-sm text-center font-medium backdrop-blur-md">
+                        Saved
+                      </span>
+                    <% end %>
+
+                    <% if pl[:href] %>
+                      <a href="<%= pl[:href] %>" target="_blank" class="p-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors backdrop-blur-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.65 14.65c-.19.28-.56.37-.84.18-2.32-1.42-5.24-1.74-8.68-.95-.32.07-.65-.13-.73-.45-.07-.32.13-.65.45-.73 3.77-.86 7.02-.49 9.63 1.11.28.18.37.56.18.84zm1.2-2.67c-.24.38-.74.5-1.12.26-2.67-1.64-6.74-2.11-9.9-1.15-.42.13-.87-.11-.99-.53-.13-.42.11-.87.53-.99 3.62-1.1 8.16-.56 11.23 1.32.38.23.5.74.26 1.12zm.1-2.78c-3.19-1.89-8.45-2.06-11.5-1.12-.48.15-1-.11-1.15-.59-.15-.48.11-1 .59-1.15 3.56-1.09 9.33-.89 13 1.3.45.27.6.86.33 1.31-.26.46-.85.6-1.3.33z"/>
+                        </svg>
+                      </a>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
       </div>
     <% end %>
   </div>

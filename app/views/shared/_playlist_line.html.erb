@@ -9,8 +9,21 @@
   
   <div class="flex-1 min-w-0">
     <h3 class="text-lg font-bold text-white truncate group-hover:text-green-400 transition-colors"><%= playlist.name %></h3>
-    <div class="text-sm text-gray-400 mt-1 truncate">
+    <div class="text-sm text-gray-400 mt-1 truncate flex items-center gap-3">
       <span class="text-gray-500">By</span> <%= playlist.owner %> • <span class="text-gray-500"><%= playlist.tracks_total %> tracks</span>
+      <% if playlist.import_status.present? %>
+        <% status_color = case playlist.import_status
+           when 'pending' then 'bg-yellow-400 text-black'
+           when 'in_progress' then 'bg-blue-400 text-black'
+           when 'completed' then 'bg-green-500 text-white'
+           when 'failed' then 'bg-red-500 text-white'
+           else 'bg-gray-400 text-white'
+        end %>
+        <span class="ml-2 px-2 py-0.5 rounded-full text-xs font-semibold <%= status_color %>"><%= playlist.import_status.titleize %></span>
+      <% end %>
+        <% if playlist.last_import_error.present? %>
+          <button data-action="click->error-modal#open" data-error="<%= j playlist.last_import_error %>" class="ml-2 text-xs text-red-400 underline">View error</button>
+        <% end %>
     </div>
   </div>
 </div>
